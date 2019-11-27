@@ -1,0 +1,68 @@
+int w = 768, h = 768;
+int border = 50;
+int depth = 1;
+
+void settings()
+{  
+  size(w, h);
+}
+
+void setup() {
+  smooth();
+  noLoop();
+}
+
+void draw()
+{  
+  background(255);
+  fill(0);
+  text("Profundidade:"+depth, 10, 30); 
+  carpet_draw(0, depth, new PVector(border, border), w - border * 2);
+}
+
+void carpet_calculate(int lvl, int max, PVector l, PVector t, PVector r)
+{
+
+  lvl++;
+
+  if (lvl > max) {
+    return;
+  }
+  fill(random(0, 255), random(0, 255), random(0, 255));
+  triangle(l.x, l.y, t.x, t.y, r.x, r.y);
+
+  PVector a = PVector.add(l, PVector.div(PVector.sub(t, l), 2));
+  PVector b = PVector.add(r, PVector.div(PVector.sub(t, r), 2));
+  PVector c = PVector.add(l, PVector.div(PVector.sub(r, l), 2));
+
+  carpet_calculate(lvl, max, a, t, b);
+  carpet_calculate(lvl, max, l, a, c);
+  carpet_calculate(lvl, max, c, b, r);
+}
+
+void carpet_draw(int lvl, int max, PVector coord, float sides)
+{
+  lvl++;
+
+  if (lvl > max) {
+    return;
+  }
+  
+  sides = sides / 3;
+  
+  for (int i = 0; i < 9; i++) {
+    if (i == 4) {
+      fill(random(0, 255), random(0, 255), random(0, 255));
+      rect(coord.x+sides, coord.y+sides, sides, sides);
+      fill(0);
+    } else {
+      PVector new_coord = new PVector(coord.x+(i%3)*sides, coord.y+(i/3)*sides);
+      carpet_draw(lvl, max, new_coord, sides);
+    }
+  }
+}
+
+void mouseClicked() {
+   depth++; 
+   redraw();
+}
